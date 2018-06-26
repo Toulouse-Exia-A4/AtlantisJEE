@@ -6,11 +6,18 @@
 package com.atlantis.jee.dal;
 
 import com.atlantis.jee.model.CalculatedMetric;
+import com.google.gson.Gson;
+import com.mongodb.Block;
 import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import org.bson.BsonDocument;
+import org.bson.BsonRegularExpression;
 import org.bson.Document;
 
 /**
@@ -116,36 +123,34 @@ public class CalculatedMetricDAO implements ICalculatedMetricDAO{
          mongoClient.getDatabase(DATABASE).getCollection(COLLECTION);
       collection.deleteOne(new Document("id", c.getId()));
    }
-/*
-   public List<Candidate> find(String filter) {
-      List<Candidate> list = new ArrayList<>();
-      MongoClient mongoClient =
-         new MongoClient(new ServerAddress(HOST, PORT));
+
+   @Override
+   public List<CalculatedMetric> findByDeviceId(String id) throws Exception {
+      List<CalculatedMetric> list = new ArrayList<>();
+      MongoClient mongoClient = getMongoClient();
       MongoCollection<Document> collection =
          mongoClient.getDatabase(DATABASE).getCollection(COLLECTION);
       FindIterable<Document> iter;
-      if (filter == null || filter.trim().length() == 0) {
-         iter = collection.find();
+      if (id == null || id.trim().length() == 0) {
+         throw new Exception("No Id specified");
       } else {
 
          BsonRegularExpression bsonRegex = new
-            BsonRegularExpression(filter);
+            BsonRegularExpression(id);
          BsonDocument bsonDoc = new BsonDocument();
-         bsonDoc.put("skillSet", bsonRegex);
+         bsonDoc.put("DeviceId", bsonRegex);
          iter = collection.find(bsonDoc);
 
       }
       iter.forEach(new Block<Document>() {
          @Override
          public void apply(Document doc) {
-            list.add(new Gson().fromJson(doc.toJson(), Candidate.class));
+            list.add(new Gson().fromJson(doc.toJson(), CalculatedMetric.class));
          }
       });
       return list;
-   }*/
+   }
+   
 
-    @Override
-    public void find(CalculatedMetric calculatedMetric) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+
 }

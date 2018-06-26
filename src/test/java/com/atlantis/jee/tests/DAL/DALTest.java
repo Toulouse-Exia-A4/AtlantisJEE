@@ -15,6 +15,7 @@ import com.mongodb.client.MongoDatabase;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.bson.BsonDocument;
 import org.bson.Document;
 
 import static org.junit.Assert.fail;
@@ -47,8 +48,6 @@ public class DALTest {
         mongoCollectionMock=Mockito.mock(MongoCollection.class);
         Mockito.when(mongoClientMock.getDatabase(Mockito.anyString())).thenReturn(mongoDatabaseMock);
         Mockito.when(mongoDatabaseMock.getCollection(Mockito.anyString())).thenReturn(mongoCollectionMock);
-        Mockito.doNothing().when(mongoCollectionMock).insertOne(Mockito.any(Document.class));
-        //Mockito.when(mongoCollectionMock).updateOne(Mockito.any(Document.class),Mockito.any(Document.class));
         this.calculatedMetric=new CalculatedMetricDAO(mongoClientMock);
         
         
@@ -177,11 +176,7 @@ public class DALTest {
             Mockito.verify(mongoCollectionMock, times(0)).deleteOne(Mockito.any(Document.class));
         }
     }
-    
-    @Test
-    public void GivenMetricIdWhenFindindMetricShouldReturnMetric(){
-        CalculatedMetric metric= new CalculatedMetric();
-    }
+
     
    
     

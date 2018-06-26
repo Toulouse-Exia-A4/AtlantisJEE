@@ -6,6 +6,7 @@
 package com.atlantis.jee.dal;
 
 import com.atlantis.jee.model.CalculatedMetric;
+import java.util.List;
 
 /**
  *
@@ -15,5 +16,5 @@ public interface ICalculatedMetricDAO {
      public void create(CalculatedMetric calculatedMetric) throws Exception ;
      public void update(CalculatedMetric calculatedMetric) throws Exception ;
      public void delete(CalculatedMetric calculatedMetric) throws Exception ;
-     public void find(CalculatedMetric calculatedMetric) throws Exception ;
+     public List<CalculatedMetric> findByDeviceId(String id) throws Exception ;
 }
