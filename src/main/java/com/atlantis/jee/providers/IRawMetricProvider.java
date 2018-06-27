@@ -8,6 +8,7 @@ package com.atlantis.jee.providers;
 import com.atlantis.jee.model.RawMetric;
 import java.util.List;
 import javax.ejb.Local;
+import java.sql.Timestamp;
 
 /**
  *
@@ -15,5 +16,5 @@ import javax.ejb.Local;
  */
 @Local
 public interface IRawMetricProvider {
-   public List<RawMetric> getRawMetricFromDevice(String deviceId, int number);
+   public List<RawMetric> getRawMetricFromDevice(String deviceId, Long date, int amount) throws Exception;
 }
