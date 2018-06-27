@@ -31,15 +31,15 @@ public class UserDataProvider implements IUserDataProvider {
     private final String baseUrl = "http://localhost:11080"; //tochange
     
     @Override
-    public User findUser(User user) {
+    public User findUser(String userId) {
         Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(this.baseUrl + "/user/" + user.getUserId());
+        WebTarget target = client.target(this.baseUrl + "/user/" + userId);
         
         Response resp = target.request().get();
         
         MultivaluedMap<String, Object> responseBody = resp.getMetadata();
         
-        user = new User();
+        User user = new User();
         user.setId(responseBody.getFirst("id").toString());
         user.setUserId(responseBody.getFirst("userId").toString());
         
@@ -76,7 +76,6 @@ public class UserDataProvider implements IUserDataProvider {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(this.baseUrl + "/user/" + user.getUserId() + "/devices");
         
-        // Response resp = target.request().get();
         JsonArray response = target.request(MediaType.APPLICATION_JSON).get(JsonArray.class);
         
         ArrayList<Device> devices = new ArrayList<>();
