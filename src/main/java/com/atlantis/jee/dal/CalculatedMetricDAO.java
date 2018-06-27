@@ -14,6 +14,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import org.bson.BsonDocument;
@@ -29,20 +30,37 @@ import org.bson.Document;
 public class CalculatedMetricDAO implements ICalculatedMetricDAO{
        private static final Logger LOGGER =
       Logger.getLogger(CalculatedMetricDAO.class.getName());
-   private final static String HOST = "localhost";
-   private final static int PORT = 27017;
+   private static String HOST;
+   private static int PORT;
 
-   public final static String DATABASE = "JEE";
-   public final static String COLLECTION = "CalculatedMetric";
+   public static String DATABASE ;
+   public static String COLLECTION ;
    
    private MongoClient _mongoClient;
 
    public CalculatedMetricDAO(){
-       
+       loadConf();
    }
+
    
    public CalculatedMetricDAO(MongoClient mongoclient){
        this._mongoClient = mongoclient;
+       loadConf();
+   }
+   
+   private void loadConf(){
+        Properties  configFile = new java.util.Properties();
+	try {
+	  configFile.load(this.getClass().getClassLoader().
+	  getResourceAsStream("config.cfg"));
+	}catch(Exception eta){
+	    eta.printStackTrace();
+	}
+        HOST=configFile.getProperty("HOST", "localhost");
+        PORT= Integer.parseInt(configFile.getProperty("PORT",  "27017"));
+        DATABASE=configFile.getProperty("DATABASE", "JEE");
+        COLLECTION=configFile.getProperty("COLLECTION", "CalculatedMetric");
+   
    }
 
    public MongoClient getMongoClient(){
