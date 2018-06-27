@@ -23,6 +23,7 @@ import org.apache.http.util.EntityUtils;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
 import org.apache.http.HttpEntity;
+import java.util.Properties;
 
 /**
  *
@@ -30,16 +31,29 @@ import org.apache.http.HttpEntity;
  */
 @Stateless
 public class UserDataProvider implements IUserDataProvider {
-    private final String baseUrl = "http://localhost:11080"; //tochange
+    private static String BASEURL;
     
     private HttpClient _httpClient;
     
     public UserDataProvider() {
-        
+        loadConf();
     }
     
     public UserDataProvider(HttpClient httpClient) {
         this._httpClient = httpClient;
+        loadConf();
+    }
+    
+    private void loadConf() {
+        Properties  configFile = new java.util.Properties();
+	try {
+	  configFile.load(this.getClass().getClassLoader().
+	  getResourceAsStream("config.cfg"));
+	}catch(Exception eta){
+	    eta.printStackTrace();
+	}
+        BASEURL = configFile.getProperty("DOTNETBASEURL", "https://192.168.1.70") + 
+                configFile.getProperty("USERDATAENDPOINT", ":30010/userdata");
     }
     
     private HttpClient getHttpClient() {
@@ -51,7 +65,7 @@ public class UserDataProvider implements IUserDataProvider {
     
     @Override
     public User findUser(String userId) throws Exception {
-        String postUrl = this.baseUrl + "/user/" + userId;
+        String postUrl = this.BASEURL + "/user/" + userId;
         HttpClient httpClient = this.getHttpClient();
         HttpGet get = new HttpGet(postUrl);
         try {
@@ -76,7 +90,7 @@ public class UserDataProvider implements IUserDataProvider {
     
     @Override
     public User createUser(User user) throws Exception {
-        String postUrl = this.baseUrl + "/user";
+        String postUrl = this.BASEURL + "/user";
         Gson gson = new Gson();
         HttpClient httpClient = this.getHttpClient();
         HttpPost post = new HttpPost(postUrl);
@@ -104,7 +118,7 @@ public class UserDataProvider implements IUserDataProvider {
     
     @Override
     public ArrayList<Device> findUserDevices(User user) throws Exception {
-        String postUrl = this.baseUrl + "/user/" + user.getUserId() + "/devices";
+        String postUrl = this.BASEURL + "/user/" + user.getUserId() + "/devices";
         HttpClient httpClient = this.getHttpClient();
         HttpGet get = new HttpGet(postUrl);
         ArrayList<Device> devices = new ArrayList<>();
