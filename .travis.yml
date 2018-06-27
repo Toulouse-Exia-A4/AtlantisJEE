@@ -1,7 +1,30 @@
 language: java
 
+
+addons:
+  apt:
+    packages:
+    - sshpass
+
 jdk:
 - oraclejdk8
 script:
 - mvn compile
+- mvn package
 - mvn test
+
+before_deploy:
+ - chmod +x scripts/deploy.sh
+
+deploy:
+  - provider: script
+    skip_cleanup: true
+    script: sshpass -p 'projetdev-debian' ssh -o "StrictHostKeyChecking false" root@93.4.202.148 -p 30000 touch hey
+    on:
+      branch: master
+  - provider: script
+    skip_cleanup: true
+    script: scripts/deploy.sh
+    on:
+      branch: master
+
