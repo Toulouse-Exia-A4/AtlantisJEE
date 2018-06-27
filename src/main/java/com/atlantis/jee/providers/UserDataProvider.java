@@ -25,7 +25,6 @@ import javax.ws.rs.core.Response;
  *
  * @author simon
  */
-@Rest
 @Stateless
 public class UserDataProvider implements IUserDataProvider {
     private final String baseUrl = "http://localhost:11080"; //tochange
