@@ -6,15 +6,15 @@
 package com.atlantis.jee.tests.providers;
 
 import com.atlantis.jee.model.User;
+import com.atlantis.jee.model.Device;
 import com.atlantis.jee.providers.IUserDataProvider;
 import com.atlantis.jee.providers.UserDataProvider;
-import javax.json.JsonArray;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.util.ArrayList;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,40 +33,36 @@ public class UserDataProviderTest {
     
     IUserDataProvider userDataProvider;
     
-    private User userMock;
-    private WebTarget targetMock;
-    private Invocation.Builder builderMock;
-    //private MultivaluedMap<String, Object> multivaluedMap;
-    //private JsonArray jsonArray;
-    private Response responseMock;
+    private HttpClient httpClientMock;
+    private HttpResponse httpResponseMock;
     
     @Before
-    public void setup() {
-        userMock = Mockito.mock(User.class);
-        targetMock = Mockito.mock(WebTarget.class);
-        builderMock = Mockito.mock(Invocation.Builder.class);
-        //multivaluedMap = Mockito.mock(MultivaluedMap.class);
-        //jsonArray = Mockito.mock(JsonArray.class);
-        responseMock = Mockito.mock(Response.class);
-        //Mockito.when(target.request().get()).thenReturn((Response) multivaluedMap);
-        //Mockito.when(target.request(MediaType.APPLICATION_JSON).get(JsonArray.class)).thenReturn(jsonArray);
-        Mockito.when(targetMock.request()).thenReturn(builderMock);
-        Mockito.when(builderMock.post(Mockito.any(Entity.class))).thenReturn(responseMock);
-        this.userDataProvider = new UserDataProvider();
+    public void setup() throws IOException {
+        httpClientMock = Mockito.mock(HttpClient.class);
+        httpResponseMock = Mockito.mock(HttpResponse.class);
+        Mockito.when(httpClientMock.execute(Mockito.any(HttpGet.class))).thenReturn(httpResponseMock);
+        Mockito.when(httpClientMock.execute(Mockito.any(HttpPost.class))).thenReturn(httpResponseMock);
+        this.userDataProvider = new UserDataProvider(httpClientMock);
+    }
+    
+    @Test
+    public void GivenUserDataWhenGettingUserShouldReturnUser() throws Exception {
+        String userId = "userid";
+        User returnedUser = userDataProvider.findUser(userId);
+        Mockito.verify(httpClientMock, times(1)).execute(Mockito.any(HttpGet.class));
     }
     
     @Test
     public void GivenUserDataWhenCreatingUserShouldReturnUser() throws Exception {
-        User user = new User("useridmock");
+        User user = new User("userid");
         User returnedUser = userDataProvider.createUser(user);
-        //Mockito.verify(returnedUser);
-        //Mockito.verify(builderMock, times(1)).post(Entity.entity(Mockito.anyString(), MediaType.APPLICATION_JSON_TYPE));
-        Mockito.verify(builderMock, times(1)).post(Mockito.any(Entity.class));
+        Mockito.verify(httpClientMock, times(1)).execute(Mockito.any(HttpPost.class));
     }
     
-    //public void GivenUserDataWhenFindingUserShouldReturnUser() throws Exception {
-    //    User user = new User("useridmock");
-    //    User returnedUser = userDataProvider.findUser(user);
-    //    Mockito.verify(user);
-    //}
+    @Test
+    public void GivenUserDataWhenGettingUserDevicesShouldReturnDeviceList() throws Exception {
+        User user = new User("userid");
+        ArrayList<Device> devices = userDataProvider.findUserDevices(user);
+        Mockito.verify(httpClientMock, times(1)).execute(Mockito.any(HttpGet.class));
+    }
 }

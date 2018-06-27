@@ -22,6 +22,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
+import org.apache.http.HttpEntity;
 
 /**
  *
@@ -31,16 +32,35 @@ import com.google.gson.JsonArray;
 public class UserDataProvider implements IUserDataProvider {
     private final String baseUrl = "http://localhost:11080"; //tochange
     
+    private HttpClient _httpClient;
+    
+    public UserDataProvider() {
+        
+    }
+    
+    public UserDataProvider(HttpClient httpClient) {
+        this._httpClient = httpClient;
+    }
+    
+    private HttpClient getHttpClient() {
+        if (this._httpClient != null)
+            return this._httpClient;
+        else
+            return HttpClientBuilder.create().build();
+    }
+    
     @Override
     public User findUser(String userId) throws Exception {
         String postUrl = this.baseUrl + "/user/" + userId;
-        Gson gson = new Gson();
-        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpClient httpClient = this.getHttpClient();
         HttpGet get = new HttpGet(postUrl);
         try {
             get.setHeader("Content-type", "application/json");
-            HttpResponse  response = httpClient.execute(get);
-            String resp_body = EntityUtils.toString(response.getEntity());
+            HttpResponse response = httpClient.execute(get);
+            HttpEntity entity = response.getEntity();
+            if (entity == null)
+                return null;
+            String resp_body = EntityUtils.toString(entity);
             JsonParser parser = new JsonParser();
             JsonObject jsobj = (JsonObject) parser.parse(resp_body);
             User user = new User();
@@ -58,14 +78,17 @@ public class UserDataProvider implements IUserDataProvider {
     public User createUser(User user) throws Exception {
         String postUrl = this.baseUrl + "/user";
         Gson gson = new Gson();
-        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpClient httpClient = this.getHttpClient();
         HttpPost post = new HttpPost(postUrl);
         try {
             StringEntity postingString = new StringEntity(gson.toJson(user));
             post.setEntity(postingString);
             post.setHeader("Content-type", "application/json");
             HttpResponse  response = httpClient.execute(post);
-            String resp_body = EntityUtils.toString(response.getEntity());
+            HttpEntity entity = response.getEntity();
+            if (entity == null)
+                return null;
+            String resp_body = EntityUtils.toString(entity);
             JsonParser parser = new JsonParser();
             JsonObject jsobj = (JsonObject) parser.parse(resp_body);
             user = new User();
@@ -82,14 +105,16 @@ public class UserDataProvider implements IUserDataProvider {
     @Override
     public ArrayList<Device> findUserDevices(User user) throws Exception {
         String postUrl = this.baseUrl + "/user/" + user.getUserId() + "/devices";
-        Gson gson = new Gson();
-        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpClient httpClient = this.getHttpClient();
         HttpGet get = new HttpGet(postUrl);
         ArrayList<Device> devices = new ArrayList<>();
         try {
             get.setHeader("Content-type", "application/json");
             HttpResponse  response = httpClient.execute(get);
-            String resp_body = EntityUtils.toString(response.getEntity());
+            HttpEntity entity = response.getEntity();
+            if (entity == null)
+                return null;
+            String resp_body = EntityUtils.toString(entity);
             JsonParser parser = new JsonParser();
             JsonArray jsarr = (JsonArray) parser.parse(resp_body);
             for (int i = 0; i < jsarr.size(); i++) {
