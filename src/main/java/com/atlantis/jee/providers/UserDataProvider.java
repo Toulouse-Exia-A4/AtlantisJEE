@@ -24,6 +24,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
 import org.apache.http.HttpEntity;
 import java.util.Properties;
+import javax.ws.rs.core.Response;
 
 /**
  *
@@ -124,7 +125,7 @@ public class UserDataProvider implements IUserDataProvider {
         ArrayList<Device> devices = new ArrayList<>();
         try {
             get.setHeader("Content-type", "application/json");
-            HttpResponse  response = httpClient.execute(get);
+            HttpResponse response = httpClient.execute(get);
             HttpEntity entity = response.getEntity();
             if (entity == null)
                 return null;
