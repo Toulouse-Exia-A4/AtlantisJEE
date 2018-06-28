@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import org.bson.BsonDocument;
 import org.bson.BsonRegularExpression;
@@ -27,6 +28,7 @@ import org.bson.Document;
  */
 
 @Stateless
+@LocalBean
 public class CalculatedMetricDAO implements ICalculatedMetricDAO{
        private static final Logger LOGGER =
       Logger.getLogger(CalculatedMetricDAO.class.getName());

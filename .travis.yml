@@ -1,7 +1,8 @@
 language: java
-
+sudo: enabled
 
 addons:
+  sh_known_hosts: 93.4.202.148
   apt:
     packages:
     - sshpass
@@ -17,11 +18,6 @@ before_deploy:
  - chmod ugo+x scripts/deploy.sh
 
 deploy:
-  - provider: script
-    skip_cleanup: true
-    script: sshpass -p 'projetdev-debian' ssh -o "StrictHostKeyChecking false" root@93.4.202.148 -p 30000 touch $SSH_PASS $SSH_USER $SSH_ENDPOINT $SSH_PORT
-    on:
-      branch: master
   - provider: script
     skip_cleanup: true
     script: scripts/deploy.sh

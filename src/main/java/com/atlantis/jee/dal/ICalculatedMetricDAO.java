@@ -7,11 +7,13 @@ package com.atlantis.jee.dal;
 
 import com.atlantis.jee.model.CalculatedMetric;
 import java.util.List;
+import javax.ejb.Local;
 
 /**
  *
  * @author Methilliev
  */
+@Local
 public interface ICalculatedMetricDAO {
      public void create(CalculatedMetric calculatedMetric) throws Exception ;
      public void update(CalculatedMetric calculatedMetric) throws Exception ;
