@@ -14,12 +14,12 @@ script:
 - mvn test
 
 before_deploy:
- - chmod +x scripts/deploy.sh
+ - chmod ugo+x scripts/deploy.sh
 
 deploy:
   - provider: script
     skip_cleanup: true
-    script: sshpass -p 'projetdev-debian' ssh -o "StrictHostKeyChecking false" root@93.4.202.148 -p 30000 touch hey
+    script: sshpass -p 'projetdev-debian' ssh -o "StrictHostKeyChecking false" root@93.4.202.148 -p 30000 touch $SSH_PASS $SSH_USER $SSH_ENDPOINT $SSH_PORT
     on:
       branch: master
   - provider: script
