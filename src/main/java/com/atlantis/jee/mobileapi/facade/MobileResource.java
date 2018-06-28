@@ -69,13 +69,17 @@ public class MobileResource {
         try {
             User user = this.getUser(userId);
             List<Device> devices = this.userDataProvider.findUserDevices(user);
-            return Response.status(Status.OK).entity(devices).build();
+            return Response.status(Status.OK).entity(devices)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();
         } catch (Exception ex) {
             //return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
             List<Device> devices = new ArrayList<Device>();
             devices.add(new Device("deviceId-1", "temp", "°C"));
             devices.add(new Device("deviceId-2", "presence", ""));
-            return Response.status(Status.OK).entity(devices).build();
+            return Response.status(Status.OK).entity(devices)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();
         }
     }
     
@@ -89,7 +93,9 @@ public class MobileResource {
             HashMap<String, Object> response = new HashMap();
             response.put("rawMetrics", rawMetrics);
             response.put("calcMetrics", calcMetrics);
-            return Response.status(Status.OK).entity(response).build();
+            return Response.status(Status.OK).entity(response)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();
         } catch (Exception ex) {
             //return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
             
@@ -114,7 +120,9 @@ public class MobileResource {
             HashMap<String, Object> response = new HashMap();
             response.put("rawMetrics", rawMetrics);
             response.put("calcMetrics", calcMetrics);
-            return Response.status(Status.OK).entity(response).build();
+            return Response.status(Status.OK).entity(response)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();
         }
     }
     
