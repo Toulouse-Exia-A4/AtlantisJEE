@@ -43,6 +43,7 @@ public class MobileResourceTest {
     private ICalculatedMetricDAO calculatedMetricDAOMock;
     
     private User userMock;
+    private Device deviceMock;
     private ArrayList<Device> devicesMock;
     private ArrayList<RawMetric> rawMetricsMock;
     private List<CalculatedMetric> calcMetricsMock;
@@ -54,8 +55,9 @@ public class MobileResourceTest {
         calculatedMetricDAOMock = Mockito.mock(CalculatedMetricDAO.class);
         
         userMock = new User("userId");
+        deviceMock = new Device("deviceId-1", "temp", "°C");
         devicesMock = new ArrayList();
-        devicesMock.add(new Device("deviceId-1", "temp", "°C"));
+        devicesMock.add(deviceMock);
         devicesMock.add(new Device("deviceId-2", "temp", "°C"));
         RawMetric rawMetric1 = new RawMetric();
         rawMetric1.setDeviceId("deviceId-1");
@@ -92,12 +94,12 @@ public class MobileResourceTest {
     
     @Test
     public void GivenMobileResourceWhenGettingRawMetricsShouldReturnResponse() {
-        Response response = this.mobileResource.getDeviceRawMetrics(this.userMock.getUserId(), System.currentTimeMillis());
+        Response response = this.mobileResource.getDeviceRawMetrics(this.userMock.getUserId(), this.deviceMock.getDeviceId(), System.currentTimeMillis());
         assert(response.getStatusInfo() == Status.OK);
     }
     
     public void GivenMobileResourceWhenGettingCalcMetricsShouldReturnResponse() {
-        Response response = this.mobileResource.getDeviceCalcMetrics(this.userMock.getUserId(), System.currentTimeMillis());
+        Response response = this.mobileResource.getDeviceCalcMetrics(this.userMock.getUserId(), this.deviceMock.getDeviceId(), System.currentTimeMillis());
         assert(response.getStatusInfo() == Status.OK);
     }
     

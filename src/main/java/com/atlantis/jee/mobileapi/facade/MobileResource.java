@@ -18,6 +18,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import com.atlantis.jee.providers.UserDataProvider;
@@ -57,10 +58,6 @@ public class MobileResource {
         this.calculatedMetricDAO = calculatedMetricDAO;
     }
 
-    /**
-     * Retrieves representation of an instance of com.atlantis.jee.mobileapi.facade.MobileResource
-     * @return an instance of java.lang.String
-     */
     @Path("getUserDevices")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -73,7 +70,7 @@ public class MobileResource {
                     .build();
         } catch (Exception ex) {
             //return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
-            List<Device> devices = new ArrayList<Device>();
+            List<Device> devices = new ArrayList<>();
             devices.add(new Device("deviceId-1", "temp", "°C"));
             devices.add(new Device("deviceId-2", "presence", ""));
             return Response.status(Status.OK).entity(devices)
@@ -85,8 +82,10 @@ public class MobileResource {
     @Path("getDeviceRawMetrics")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getDeviceRawMetrics(@QueryParam("deviceId") String deviceId, @QueryParam("timestamp") Long timestamp) {
+    public Response getDeviceRawMetrics(@QueryParam("userId") String userId, @QueryParam("deviceId") String deviceId, @QueryParam("timestamp") Long timestamp) {
         try {
+            //if (!this.checkUserHasDevice(userId, deviceId))
+            //    return Response.status(Status.FORBIDDEN).entity("User has no right on device " + deviceId).build();
             List<RawMetric> rawMetrics = this.rawMetricProvider.getRawMetricFromDevice(deviceId, timestamp, 20);
             return Response.status(Status.OK).entity(rawMetrics)
                     .header("Access-Control-Allow-Origin", "*")
@@ -110,22 +109,42 @@ public class MobileResource {
     @Path("getDeviceCalcMetrics")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getDeviceCalcMetrics(@QueryParam("deviceId") String deviceId, @QueryParam("timestamp") Long timestamp) {
+    public Response getDeviceCalcMetrics(@QueryParam("userId") String userId, @QueryParam("deviceId") String deviceId, @QueryParam("timestamp") Long timestamp) {
         try {
+            //if (!this.checkUserHasDevice(userId, deviceId))
+            //    return Response.status(Status.FORBIDDEN).entity("User has no right on device " + deviceId).build();
             List<CalculatedMetric> calcMetrics = this.calculatedMetricDAO.findByDeviceId(deviceId);
             return Response.status(Status.OK).entity(calcMetrics)
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
         } catch (Exception ex) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
-            //List<CalculatedMetric> calcMetrics = new ArrayList();
-            //for(int i = 0; i < 20; i++) {
-            //    CalculatedMetric calcMetric = new CalculatedMetric("deviceId-1", new Date(), new Date(), 20, "moy");
-            //    calcMetrics.add(calcMetric);
-            //}
-            //return Response.status(Status.OK).entity(calcMetrics)
-            //        .header("Access-Control-Allow-Origin", "*")
-            //        .build();
+        }
+    }
+    
+    @Path("sendMessageToDevice")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response sendMessageToDevice(@QueryParam("userId") String userId, @QueryParam("deviceId") String deviceId, @QueryParam("message") String message) {
+        try {
+            //if (!this.checkUserHasDevice(userId, deviceId))
+            //    return Response.status(Status.FORBIDDEN).entity("User has no right on device " + deviceId).build();
+            
+            //logic
+            
+            return Response.status(Status.OK).entity("Your message will be send to and treated by your device shortly").build();
+        } catch (Exception ex) {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
+        }
+    }
+    
+    private Boolean checkUserHasDevice(String userId, String deviceId) throws Exception {
+        try {
+            User user = this.getUser(userId);
+            List<Device> devices = this.userDataProvider.findUserDevices(user);
+            return devices.stream().anyMatch((device) -> (device.getDeviceId().equals(deviceId)));
+        } catch (Exception ex) {
+            throw ex;
         }
     }
     
