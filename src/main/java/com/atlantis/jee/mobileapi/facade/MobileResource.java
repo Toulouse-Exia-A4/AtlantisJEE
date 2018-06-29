@@ -117,15 +117,15 @@ public class MobileResource {
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
         } catch (Exception ex) {
-            //return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
-            List<CalculatedMetric> calcMetrics = new ArrayList();
-            for(int i = 0; i < 20; i++) {
-                CalculatedMetric calcMetric = new CalculatedMetric("deviceId-1", new Date(), new Date(), 20, "moy");
-                calcMetrics.add(calcMetric);
-            }
-            return Response.status(Status.OK).entity(calcMetrics)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
+            //List<CalculatedMetric> calcMetrics = new ArrayList();
+            //for(int i = 0; i < 20; i++) {
+            //    CalculatedMetric calcMetric = new CalculatedMetric("deviceId-1", new Date(), new Date(), 20, "moy");
+            //    calcMetrics.add(calcMetric);
+            //}
+            //return Response.status(Status.OK).entity(calcMetrics)
+            //        .header("Access-Control-Allow-Origin", "*")
+            //        .build();
         }
     }
     
