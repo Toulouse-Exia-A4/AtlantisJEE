@@ -22,12 +22,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import com.atlantis.jee.providers.UserDataProvider;
 import java.util.List;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import javax.ws.rs.QueryParam;
 
 /**
  * REST Web Service
@@ -64,7 +64,7 @@ public class MobileResource {
     @Path("getUserDevices")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUserDevices(@PathParam("userId") String userId) {
+    public Response getUserDevices(@QueryParam("userId") String userId) {
         try {
             User user = this.getUser(userId);
             List<Device> devices = this.userDataProvider.findUserDevices(user);
@@ -85,7 +85,7 @@ public class MobileResource {
     @Path("getDeviceRawMetrics")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getDeviceRawMetrics(@PathParam("deviceId") String deviceId, @PathParam("timestamp") Long timestamp) {
+    public Response getDeviceRawMetrics(@QueryParam("deviceId") String deviceId, @QueryParam("timestamp") Long timestamp) {
         try {
             List<RawMetric> rawMetrics = this.rawMetricProvider.getRawMetricFromDevice(deviceId, timestamp, 20);
             return Response.status(Status.OK).entity(rawMetrics)
@@ -110,7 +110,7 @@ public class MobileResource {
     @Path("getDeviceCalcMetrics")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getDeviceCalcMetrics(@PathParam("deviceId") String deviceId, @PathParam("timestamp") Long timestamp) {
+    public Response getDeviceCalcMetrics(@QueryParam("deviceId") String deviceId, @QueryParam("timestamp") Long timestamp) {
         try {
             List<CalculatedMetric> calcMetrics = this.calculatedMetricDAO.findByDeviceId(deviceId);
             return Response.status(Status.OK).entity(calcMetrics)
