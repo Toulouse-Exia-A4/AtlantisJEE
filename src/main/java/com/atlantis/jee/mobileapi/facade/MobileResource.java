@@ -28,7 +28,6 @@ import javax.ws.rs.core.Response.Status;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 
 /**
  * REST Web Service
@@ -83,44 +82,48 @@ public class MobileResource {
         }
     }
     
-    @Path("getDeviceMetrics")
+    @Path("getDeviceRawMetrics")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getDeviceMetrics(@PathParam("deviceId") String deviceId) {
+    public Response getDeviceRawMetrics(@PathParam("deviceId") String deviceId, @PathParam("timestamp") Long timestamp) {
         try {
-            List<RawMetric> rawMetrics = this.rawMetricProvider.getRawMetricFromDevice(deviceId, new Timestamp(System.currentTimeMillis()).getTime(), 20);
-            List<CalculatedMetric> calcMetrics = this.calculatedMetricDAO.findByDeviceId(deviceId);
-            HashMap<String, Object> response = new HashMap();
-            response.put("rawMetrics", rawMetrics);
-            response.put("calcMetrics", calcMetrics);
-            return Response.status(Status.OK).entity(response)
+            List<RawMetric> rawMetrics = this.rawMetricProvider.getRawMetricFromDevice(deviceId, timestamp, 20);
+            return Response.status(Status.OK).entity(rawMetrics)
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
         } catch (Exception ex) {
             //return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
-            
-            RawMetric rawMetric1 = new RawMetric();
-            rawMetric1.setDeviceId("deviceId-1");
-            rawMetric1.setValue("20");
-            rawMetric1.setDate(new Timestamp(System.currentTimeMillis()).getTime()-100);
-            RawMetric rawMetric2 = new RawMetric();
-            rawMetric2.setDeviceId("deviceId-1");
-            rawMetric2.setValue("20");
-            rawMetric2.setDate(new Timestamp(System.currentTimeMillis()).getTime());
             List<RawMetric> rawMetrics = new ArrayList();
-            rawMetrics.add(rawMetric1);
-            rawMetrics.add(rawMetric2);
-            
-            CalculatedMetric calcMetric1 = new CalculatedMetric("deviceId-1", new Date(), new Date(), 20, "moy");
-            CalculatedMetric calcMetric2 = new CalculatedMetric("deviceId-1", new Date(), new Date(), 20, "med");
+            for (int i = 0; i < 20; i++) {
+                RawMetric rawMetric = new RawMetric();
+                rawMetric.setDeviceId("deviceId-1");
+                rawMetric.setValue("20");
+                rawMetric.setDate(new Timestamp(System.currentTimeMillis()).getTime() - i * 10000);
+                rawMetrics.add(rawMetric);
+            }
+            return Response.status(Status.OK).entity(rawMetrics)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();
+        }
+    }
+    
+    @Path("getDeviceCalcMetrics")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getDeviceCalcMetrics(@PathParam("deviceId") String deviceId, @PathParam("timestamp") Long timestamp) {
+        try {
+            List<CalculatedMetric> calcMetrics = this.calculatedMetricDAO.findByDeviceId(deviceId);
+            return Response.status(Status.OK).entity(calcMetrics)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();
+        } catch (Exception ex) {
+            //return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
             List<CalculatedMetric> calcMetrics = new ArrayList();
-            calcMetrics.add(calcMetric1);
-            calcMetrics.add(calcMetric2);
-            
-            HashMap<String, Object> response = new HashMap();
-            response.put("rawMetrics", rawMetrics);
-            response.put("calcMetrics", calcMetrics);
-            return Response.status(Status.OK).entity(response)
+            for(int i = 0; i < 20; i++) {
+                CalculatedMetric calcMetric = new CalculatedMetric("deviceId-1", new Date(), new Date(), 20, "moy");
+                calcMetrics.add(calcMetric);
+            }
+            return Response.status(Status.OK).entity(calcMetrics)
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
         }

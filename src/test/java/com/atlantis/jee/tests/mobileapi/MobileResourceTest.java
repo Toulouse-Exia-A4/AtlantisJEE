@@ -91,8 +91,13 @@ public class MobileResourceTest {
     }
     
     @Test
-    public void GivenMobileResourceWhenGettingMetricsShouldReturnResponse() {
-        Response response = this.mobileResource.getDeviceMetrics(this.userMock.getUserId());
+    public void GivenMobileResourceWhenGettingRawMetricsShouldReturnResponse() {
+        Response response = this.mobileResource.getDeviceRawMetrics(this.userMock.getUserId(), System.currentTimeMillis());
+        assert(response.getStatusInfo() == Status.OK);
+    }
+    
+    public void GivenMobileResourceWhenGettingCalcMetricsShouldReturnResponse() {
+        Response response = this.mobileResource.getDeviceCalcMetrics(this.userMock.getUserId(), System.currentTimeMillis());
         assert(response.getStatusInfo() == Status.OK);
     }
     

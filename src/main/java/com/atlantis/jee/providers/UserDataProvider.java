@@ -66,7 +66,7 @@ public class UserDataProvider implements IUserDataProvider {
     
     @Override
     public User findUser(String userId) throws Exception {
-        String postUrl = this.BASEURL + "/user/" + userId;
+        String postUrl = this.BASEURL + "/users/" + userId;
         HttpClient httpClient = this.getHttpClient();
         HttpGet get = new HttpGet(postUrl);
         try {
@@ -91,7 +91,7 @@ public class UserDataProvider implements IUserDataProvider {
     
     @Override
     public User createUser(User user) throws Exception {
-        String postUrl = this.BASEURL + "/user";
+        String postUrl = this.BASEURL + "/users";
         Gson gson = new Gson();
         HttpClient httpClient = this.getHttpClient();
         HttpPost post = new HttpPost(postUrl);
@@ -119,7 +119,7 @@ public class UserDataProvider implements IUserDataProvider {
     
     @Override
     public ArrayList<Device> findUserDevices(User user) throws Exception {
-        String postUrl = this.BASEURL + "/user/" + user.getUserId() + "/devices";
+        String postUrl = this.BASEURL + "/users/" + user.getUserId() + "/devices";
         HttpClient httpClient = this.getHttpClient();
         HttpGet get = new HttpGet(postUrl);
         ArrayList<Device> devices = new ArrayList<>();
@@ -135,6 +135,7 @@ public class UserDataProvider implements IUserDataProvider {
             for (int i = 0; i < jsarr.size(); i++) {
                 Device device = new Device();
                 JsonObject jsobj = (JsonObject) parser.parse(jsarr.get(i).toString());
+                device.setId(jsobj.get("id").toString());
                 device.setDeviceId(jsobj.get("deviceId").toString());
                 device.setType(jsobj.get("type").toString());
                 device.setUnit(jsobj.get("unit").toString());
