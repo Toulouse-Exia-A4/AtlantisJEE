@@ -29,6 +29,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.ws.rs.QueryParam;
+import org.apache.commons.codec.binary.Base64;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * REST Web Service
@@ -45,6 +48,7 @@ public class MobileResource {
     private final IRawMetricProvider rawMetricProvider;
     private final ICalculatedMetricDAO calculatedMetricDAO;
     
+    private final String jwtTokenExpiredExceptionMessage = "JWT expired";
     
     public MobileResource() {
         userDataProvider = new UserDataProvider();
@@ -61,14 +65,17 @@ public class MobileResource {
     @Path("getUserDevices")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUserDevices(@QueryParam("userId") String userId) {
+    public Response getUserDevices(@QueryParam("token") String token) {
         try {
+            String userId = this.getUserIdFromToken(token);
             User user = this.getUser(userId);
             List<Device> devices = this.userDataProvider.findUserDevices(user);
             return Response.status(Status.OK).entity(devices)
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
         } catch (Exception ex) {
+            if (ex.getMessage().equals(this.jwtTokenExpiredExceptionMessage))
+                return Response.status(Status.UNAUTHORIZED).entity(this.jwtTokenExpiredExceptionMessage).header("Access-Control-Allow-Origin", "*").build();
             //return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
             List<Device> devices = new ArrayList<>();
             devices.add(new Device("deviceId-1", "temp", "°C"));
@@ -82,8 +89,9 @@ public class MobileResource {
     @Path("getDeviceRawMetrics")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getDeviceRawMetrics(@QueryParam("userId") String userId, @QueryParam("deviceId") String deviceId, @QueryParam("timestamp") Long timestamp) {
+    public Response getDeviceRawMetrics(@QueryParam("token") String token, @QueryParam("deviceId") String deviceId, @QueryParam("timestamp") Long timestamp) {
         try {
+            String userId = this.getUserIdFromToken(token);
             //if (!this.checkUserHasDevice(userId, deviceId))
             //    return Response.status(Status.FORBIDDEN).entity("User has no right on device " + deviceId).build();
             List<RawMetric> rawMetrics = this.rawMetricProvider.getRawMetricFromDevice(deviceId, timestamp, 20);
@@ -91,6 +99,8 @@ public class MobileResource {
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
         } catch (Exception ex) {
+            if (ex.getMessage().equals(this.jwtTokenExpiredExceptionMessage))
+                return Response.status(Status.UNAUTHORIZED).entity(this.jwtTokenExpiredExceptionMessage).header("Access-Control-Allow-Origin", "*").build();
             //return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
             List<RawMetric> rawMetrics = new ArrayList();
             for (int i = 0; i < 20; i++) {
@@ -109,8 +119,9 @@ public class MobileResource {
     @Path("getDeviceCalcMetrics")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getDeviceCalcMetrics(@QueryParam("userId") String userId, @QueryParam("deviceId") String deviceId, @QueryParam("timestamp") Long timestamp) {
+    public Response getDeviceCalcMetrics(@QueryParam("token") String token, @QueryParam("deviceId") String deviceId, @QueryParam("timestamp") Long timestamp) {
         try {
+            String userId = this.getUserIdFromToken(token);
             //if (!this.checkUserHasDevice(userId, deviceId))
             //    return Response.status(Status.FORBIDDEN).entity("User has no right on device " + deviceId).build();
             List<CalculatedMetric> calcMetrics = this.calculatedMetricDAO.findByDeviceId(deviceId);
@@ -118,6 +129,8 @@ public class MobileResource {
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
         } catch (Exception ex) {
+            if (ex.getMessage().equals(this.jwtTokenExpiredExceptionMessage))
+                return Response.status(Status.UNAUTHORIZED).entity(this.jwtTokenExpiredExceptionMessage).header("Access-Control-Allow-Origin", "*").build();
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
         }
     }
@@ -125,8 +138,9 @@ public class MobileResource {
     @Path("sendMessageToDevice")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public Response sendMessageToDevice(@QueryParam("userId") String userId, @QueryParam("deviceId") String deviceId, @QueryParam("message") String message) {
+    public Response sendMessageToDevice(@QueryParam("token") String token, @QueryParam("deviceId") String deviceId, @QueryParam("message") String message) {
         try {
+            String userId = this.getUserIdFromToken(token);
             //if (!this.checkUserHasDevice(userId, deviceId))
             //    return Response.status(Status.FORBIDDEN).entity("User has no right on device " + deviceId).build();
             
@@ -134,6 +148,8 @@ public class MobileResource {
             
             return Response.status(Status.OK).entity("Your message will be send to and treated by your device shortly").build();
         } catch (Exception ex) {
+            if (ex.getMessage().equals(this.jwtTokenExpiredExceptionMessage))
+                return Response.status(Status.UNAUTHORIZED).entity(this.jwtTokenExpiredExceptionMessage).header("Access-Control-Allow-Origin", "*").build();
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
         }
     }
@@ -158,5 +174,25 @@ public class MobileResource {
         } catch (Exception ex) {
             throw ex;
         }
+    }
+    
+    private String getUserIdFromToken(String token) throws Exception {
+        JsonObject decodedJWT = this.decodeJWT(token);
+        if (decodedJWT.get("exp").getAsLong() < System.currentTimeMillis() / 1000) {
+            throw new Exception(this.jwtTokenExpiredExceptionMessage);
+        }
+        return decodedJWT.get("sub").toString();
+    }
+    
+    private JsonObject decodeJWT(String token){
+        String[] split_string = token.split("\\.");
+        String base64EncodedBody = split_string[1];
+
+        Base64 base64Url = new Base64(true);
+
+        String body = new String(base64Url.decode(base64EncodedBody));
+        JsonParser parser = new JsonParser();
+        JsonObject jsobj = (JsonObject) parser.parse(body);
+        return jsobj;
     }
 }

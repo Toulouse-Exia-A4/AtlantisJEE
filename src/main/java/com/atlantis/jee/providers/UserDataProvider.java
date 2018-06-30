@@ -91,7 +91,7 @@ public class UserDataProvider implements IUserDataProvider {
     
     @Override
     public User createUser(User user) throws Exception {
-        String postUrl = this.BASEURL + "/users";
+        String postUrl = this.BASEURL + "/users/create";
         Gson gson = new Gson();
         HttpClient httpClient = this.getHttpClient();
         HttpPost post = new HttpPost(postUrl);
