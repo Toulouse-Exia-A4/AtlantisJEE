@@ -32,10 +32,10 @@ import javax.ws.rs.QueryParam;
 import org.apache.commons.codec.binary.Base64;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
-import java.io.StringReader;
-import javax.json.Json;
 import javax.ws.rs.Consumes;
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * REST Web Service
@@ -156,7 +156,9 @@ public class MobileResource {
             
             //logic
             
-            return Response.status(Status.OK).entity("Your message will be send to and treated by your device shortly").header("Access-Control-Allow-Origin", "*").build();
+            Map responseBody = new HashMap();
+            responseBody.put("message", "Your message will be send to and treated by your device shortly");
+            return Response.status(Status.OK).entity(responseBody).header("Access-Control-Allow-Origin", "*").build();
         } catch (Exception ex) {
             if (ex.getMessage() != null && ex.getMessage().equals(this.jwtTokenExpiredExceptionMessage))
                 return Response.status(Status.UNAUTHORIZED).entity(this.jwtTokenExpiredExceptionMessage).header("Access-Control-Allow-Origin", "*").build();
