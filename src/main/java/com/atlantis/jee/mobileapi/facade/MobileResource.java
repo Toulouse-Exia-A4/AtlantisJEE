@@ -141,7 +141,7 @@ public class MobileResource {
     
     @Path("sendMessageToDevice")
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
     public Response sendMessageToDevice(String content) {
         try {
