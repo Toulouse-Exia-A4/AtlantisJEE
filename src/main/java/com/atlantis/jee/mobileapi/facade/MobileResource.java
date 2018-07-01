@@ -32,6 +32,10 @@ import javax.ws.rs.QueryParam;
 import org.apache.commons.codec.binary.Base64;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
+import java.io.StringReader;
+import javax.json.Json;
+import javax.ws.rs.Consumes;
 
 /**
  * REST Web Service
@@ -137,18 +141,24 @@ public class MobileResource {
     
     @Path("sendMessageToDevice")
     @POST
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response sendMessageToDevice(@QueryParam("token") String token, @QueryParam("deviceId") String deviceId, @QueryParam("message") String message) {
+    public Response sendMessageToDevice(String content) {
         try {
+            JsonParser parser = new JsonParser();
+            JsonObject jsobj = (JsonObject) parser.parse(content);
+            String token = jsobj.get("token").toString();
+            String deviceId = jsobj.get("deviceId").toString();
+            String command = jsobj.get("command").toString();
             String userId = this.getUserIdFromToken(token);
             //if (!this.checkUserHasDevice(userId, deviceId))
             //    return Response.status(Status.FORBIDDEN).entity("User has no right on device " + deviceId).build();
             
             //logic
             
-            return Response.status(Status.OK).entity("Your message will be send to and treated by your device shortly").build();
+            return Response.status(Status.OK).entity("Your message will be send to and treated by your device shortly").header("Access-Control-Allow-Origin", "*").build();
         } catch (Exception ex) {
-            if (ex.getMessage().equals(this.jwtTokenExpiredExceptionMessage))
+            if (ex.getMessage() != null && ex.getMessage().equals(this.jwtTokenExpiredExceptionMessage))
                 return Response.status(Status.UNAUTHORIZED).entity(this.jwtTokenExpiredExceptionMessage).header("Access-Control-Allow-Origin", "*").build();
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
         }
