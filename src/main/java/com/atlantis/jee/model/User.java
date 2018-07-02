@@ -14,15 +14,23 @@ import java.util.ArrayList;
 public class User {
     String _id;
     String UserId;
+    String Firstname;
+    String Lastname;
     ArrayList<Device> Devices;
     
-    public User(String UserId) {
-        this.UserId = UserId;
+    public User(String userId) {
+        this.UserId = userId;
     }
     
-    public User(String UserId, ArrayList<Device> Devices) {
-        this.UserId = UserId;
-        this.Devices = Devices;
+    public User(String userId, String firstname, String lastname) {
+        this.UserId = userId;
+        this.Firstname = firstname;
+        this.Lastname = lastname;
+    }
+    
+    public User(String userId, ArrayList<Device> devices) {
+        this.UserId = userId;
+        this.Devices = devices;
     }
 
     public String getId() {
@@ -39,6 +47,22 @@ public class User {
 
     public void setUserId(String UserId) {
         this.UserId = UserId;
+    }
+    
+    public String getFirstname() {
+        return Firstname;
+    }
+
+    public void setFirstname(String Firstname) {
+        this.Firstname = Firstname;
+    }
+
+    public String getLastname() {
+        return Lastname;
+    }
+
+    public void setLastname(String Lastname) {
+        this.Lastname = Lastname;
     }
 
     public ArrayList<Device> getDevices() {

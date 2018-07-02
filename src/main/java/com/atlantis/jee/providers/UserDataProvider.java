@@ -53,7 +53,7 @@ public class UserDataProvider implements IUserDataProvider {
 	}catch(Exception eta){
 	    eta.printStackTrace();
 	}
-        BASEURL = configFile.getProperty("DOTNETBASEURL", "https://192.168.1.70") + 
+        BASEURL = configFile.getProperty("DOTNETBASEURL", "https://192.168.1.87") + 
                 configFile.getProperty("USERDATAENDPOINT", ":30010/userdata");
     }
     
@@ -81,6 +81,8 @@ public class UserDataProvider implements IUserDataProvider {
             User user = new User();
             user.setId(jsobj.get("id").toString());
             user.setUserId(jsobj.get("userId").toString());
+            user.setFirstname(jsobj.get("firstname").toString());
+            user.setLastname(jsobj.get("lastname").toString());
             return user;
         } catch( UnsupportedEncodingException ex) {
             throw ex;
@@ -109,6 +111,8 @@ public class UserDataProvider implements IUserDataProvider {
             user = new User();
             user.setId(jsobj.get("id").toString());
             user.setUserId(jsobj.get("userId").toString());
+            user.setFirstname(jsobj.get("firstname").toString());
+            user.setLastname(jsobj.get("lastname").toString());
             return user;
         } catch( UnsupportedEncodingException ex) {
             throw ex;
