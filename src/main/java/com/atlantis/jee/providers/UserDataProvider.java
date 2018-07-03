@@ -89,18 +89,19 @@ public class UserDataProvider implements IUserDataProvider {
             JsonObject jsobj = (JsonObject) parser.parse(resp_body);
             User user = new User();
             //logger.log(Level.WARNING, jsobj.toString());
-            user.setUserId(jsobj.get("userId").toString());
-            user.setFirstname(jsobj.get("firstname").toString());
-            user.setLastname(jsobj.get("lastname").toString());
+            user.setUserId(jsobj.get("userId").toString().replace("\"", ""));
+            user.setFirstname(jsobj.get("firstname").toString().replace("\"", ""));
+            user.setLastname(jsobj.get("lastname").toString().replace("\"", ""));
             ArrayList<Device> devices = new ArrayList<>();
             JsonArray jsarrDevices = jsobj.getAsJsonArray("devices");
             for (int i = 0; i < jsarrDevices.size(); i++) {
                 Device device = new Device();
                 JsonObject jsobjDevice = (JsonObject) parser.parse(jsarrDevices.get(i).toString());
-                device.setId(jsobjDevice.get("id").toString());
-                device.setDeviceId(jsobjDevice.get("deviceId").toString());
-                device.setType(jsobjDevice.get("type").toString());
-                device.setUnit(jsobjDevice.get("unit").toString());
+                device.setDeviceId(jsobjDevice.get("deviceId").toString().replace("\"", ""));
+                device.setName(jsobjDevice.get("name").toString().replace("\"", ""));
+                JsonObject jsobjType = jsobj.getAsJsonObject("type");
+                device.setType(jsobjType.get("type").toString().replace("\"", ""));
+                device.setUnit(jsobjType.get("unit").toString().replace("\"", ""));
                 devices.add(device);
             }
             user.setDevices(devices);

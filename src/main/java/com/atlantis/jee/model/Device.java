@@ -10,8 +10,8 @@ package com.atlantis.jee.model;
  * @author simon
  */
 public class Device {
-    String _id;
     String DeviceId;
+    String Name;
     String Type;
     String Unit;
 
@@ -23,8 +23,9 @@ public class Device {
         this.Unit = Unit;
     }
     
-    public Device(String DeviceId, String Type, String Unit) {
+    public Device(String DeviceId, String Name, String Type, String Unit) {
         this.DeviceId = DeviceId;
+        this.Name = Name;
         this.Type = Type;
         this.Unit = Unit;
     }
@@ -33,20 +34,20 @@ public class Device {
         
     }
 
-    public String getId() {
-        return _id;
-    }
-
-    public void setId(String _id) {
-        this._id = _id;
-    }
-
     public String getDeviceId() {
         return DeviceId;
     }
 
     public void setDeviceId(String DeviceId) {
         this.DeviceId = DeviceId;
+    }
+    
+    public String getName() {
+        return Name;
+    }
+
+    public void setName(String Name) {
+        this.Name = Name;
     }
 
     public String getType() {
