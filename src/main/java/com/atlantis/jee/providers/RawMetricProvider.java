@@ -87,9 +87,9 @@ public class RawMetricProvider implements IRawMetricProvider {
             for (int i = 0; i < jsarr.size(); i++) {
                 RawMetric rawMetric = new RawMetric();
                 JsonObject jsobj = (JsonObject) parser.parse(jsarr.get(i).toString());
-                rawMetric.setDeviceId(jsobj.get("deviceId").toString());
+                rawMetric.setDeviceId(jsobj.get("deviceId").toString().replace("\"", ""));
                 rawMetric.setDate(jsobj.get("date").getAsLong());
-                rawMetric.setValue(jsobj.get("value").toString());
+                rawMetric.setValue(jsobj.get("value").toString().replace("\"", ""));
                 rawMetrics.add(rawMetric);
             }
             return rawMetrics;
