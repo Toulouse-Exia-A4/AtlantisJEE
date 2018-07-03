@@ -88,7 +88,7 @@ public class UserDataProvider implements IUserDataProvider {
             }
             JsonObject jsobj = (JsonObject) parser.parse(resp_body);
             User user = new User();
-            user.setId(jsobj.get("id").toString());
+            logger.log(Level.WARNING, jsobj.toString());
             user.setUserId(jsobj.get("userId").toString());
             user.setFirstname(jsobj.get("firstname").toString());
             user.setLastname(jsobj.get("lastname").toString());
