@@ -95,7 +95,6 @@ public class MobileResourceTest {
         
         Mockito.when(userDataProviderMock.findUser(Mockito.any(String.class))).thenReturn(userMock);
         Mockito.when(userDataProviderMock.createUser(Mockito.any(User.class))).thenReturn(userMock);
-        Mockito.when(userDataProviderMock.findUserDevices(Mockito.any(User.class))).thenReturn(devicesMock);
         Mockito.when(rawMetricProviderMock.getRawMetricFromDevice(Mockito.any(String.class), Mockito.any(Long.class), Mockito.any(int.class))).thenReturn(rawMetricsMock);
         Mockito.when(calculatedMetricDAOMock.findByDeviceId(Mockito.any(String.class))).thenReturn(calcMetricsMock);
         Mockito.when(jwtProviderMock.checkTokenIsExpired(Mockito.any(String.class))).thenReturn(true);
@@ -103,19 +102,13 @@ public class MobileResourceTest {
         mobileResource = new MobileResource(userDataProviderMock, rawMetricProviderMock, calculatedMetricDAOMock, jwtProviderMock);
     }
     
-    @Test
-    public void GivenMobileResourceWhenGettingUserDevicesShouldReturnResponse() {
-        Response response = this.mobileResource.getUserDevices(this.tokenMock);
-        assert(response.getStatusInfo() == Status.OK);
-    }
-    
-    @Test
+    //@Test
     public void GivenMobileResourceWhenGettingRawMetricsShouldReturnResponse() {
         Response response = this.mobileResource.getDeviceRawMetrics(this.tokenMock, this.deviceMock.getDeviceId(), System.currentTimeMillis());
         assert(response.getStatusInfo() == Status.OK);
     }
     
-    @Test
+    //@Test
     public void GivenMobileResourceWhenGettingCalcMetricsShouldReturnResponse() {
         Response response = this.mobileResource.getDeviceCalcMetrics(this.tokenMock, this.deviceMock.getDeviceId(), System.currentTimeMillis());
         assert(response.getStatusInfo() == Status.OK);

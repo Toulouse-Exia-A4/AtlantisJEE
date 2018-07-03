@@ -92,6 +92,18 @@ public class UserDataProvider implements IUserDataProvider {
             user.setUserId(jsobj.get("userId").toString());
             user.setFirstname(jsobj.get("firstname").toString());
             user.setLastname(jsobj.get("lastname").toString());
+            ArrayList<Device> devices = new ArrayList<>();
+            JsonArray jsarrDevices = jsobj.getAsJsonArray("devices");
+            for (int i = 0; i < jsarrDevices.size(); i++) {
+                Device device = new Device();
+                JsonObject jsobjDevice = (JsonObject) parser.parse(jsarrDevices.get(i).toString());
+                device.setId(jsobjDevice.get("id").toString());
+                device.setDeviceId(jsobjDevice.get("deviceId").toString());
+                device.setType(jsobjDevice.get("type").toString());
+                device.setUnit(jsobjDevice.get("unit").toString());
+                devices.add(device);
+            }
+            user.setDevices(devices);
             return user;
         } catch( UnsupportedEncodingException ex) {
             throw ex;
@@ -128,39 +140,6 @@ public class UserDataProvider implements IUserDataProvider {
             user.setFirstname(jsobj.get("firstname").toString());
             user.setLastname(jsobj.get("lastname").toString());
             return user;
-        } catch( UnsupportedEncodingException ex) {
-            throw ex;
-        } catch(IOException ex) {
-            throw ex;
-        }
-    }
-    
-    @Override
-    public ArrayList<Device> findUserDevices(User user) throws Exception {
-        String postUrl = this.BASEURL + "/users/" + user.getUserId() + "/devices";
-        HttpClient httpClient = this.getHttpClient();
-        HttpGet get = new HttpGet(postUrl);
-        ArrayList<Device> devices = new ArrayList<>();
-        try {
-            get.setHeader("Content-type", "application/json");
-            HttpResponse response = httpClient.execute(get);
-            HttpEntity entity = response.getEntity();
-            if (entity == null)
-                return null;
-            String resp_body = EntityUtils.toString(entity);
-            JsonParser parser = new JsonParser();
-            JsonArray jsarr = (JsonArray) parser.parse(resp_body);
-            logger.log(Level.WARNING, jsarr.toString());
-            for (int i = 0; i < jsarr.size(); i++) {
-                Device device = new Device();
-                JsonObject jsobj = (JsonObject) parser.parse(jsarr.get(i).toString());
-                device.setId(jsobj.get("id").toString());
-                device.setDeviceId(jsobj.get("deviceId").toString());
-                device.setType(jsobj.get("type").toString());
-                device.setUnit(jsobj.get("unit").toString());
-                devices.add(device);
-            }
-            return devices;
         } catch( UnsupportedEncodingException ex) {
             throw ex;
         } catch(IOException ex) {

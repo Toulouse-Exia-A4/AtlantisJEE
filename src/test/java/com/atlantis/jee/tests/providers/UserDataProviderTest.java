@@ -58,11 +58,4 @@ public class UserDataProviderTest {
         User returnedUser = userDataProvider.createUser(user);
         Mockito.verify(httpClientMock, times(1)).execute(Mockito.any(HttpPost.class));
     }
-    
-    @Test
-    public void GivenUserDataWhenGettingUserDevicesShouldReturnDeviceList() throws Exception {
-        User user = new User("userid");
-        ArrayList<Device> devices = userDataProvider.findUserDevices(user);
-        Mockito.verify(httpClientMock, times(1)).execute(Mockito.any(HttpGet.class));
-    }
 }

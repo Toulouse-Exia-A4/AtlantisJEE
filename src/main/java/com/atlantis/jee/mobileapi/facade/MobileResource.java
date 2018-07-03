@@ -80,29 +80,6 @@ public class MobileResource {
         this.jmsProvider = new JMSProvider();
         logger = Logger.getLogger(MobileResource.class.getName());
     }
-
-    @Path("getUserDevices")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getUserDevices(@QueryParam("token") String token) {
-        try {
-            String userId = this.jwtProvider.getUserIdFromToken(token);
-            User user = this.getUserFromUserDataWebService(userId);
-            logger.log(Level.WARNING, user.toString());
-            List<Device> devices = this.userDataProvider.findUserDevices(user);
-            return Response.status(Status.OK).entity(devices)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();
-        } catch (Exception ex) {
-            //logger.log(Level.WARNING, ex.toString());
-            //logger.log(Level.WARNING, Arrays.toString(ex.getStackTrace()));
-            if (ex.getMessage().equals(this.userDoesNotExistExceptionMessage))
-                return Response.status(Status.NOT_FOUND).entity(this.userDoesNotExistExceptionMessage).header("Access-Control-Allow-Origin", "*").build();
-            if (ex.getMessage().equals(this.jwtProvider.jwtTokenExpiredExceptionMessage))
-                return Response.status(Status.UNAUTHORIZED).entity(this.jwtProvider.jwtTokenExpiredExceptionMessage).header("Access-Control-Allow-Origin", "*").build();
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
-        }
-    }
     
     @Path("getDeviceRawMetrics")
     @GET
@@ -119,7 +96,7 @@ public class MobileResource {
         } catch (Exception ex) {
             logger.log(Level.WARNING, ex.toString());
             logger.log(Level.WARNING, Arrays.toString(ex.getStackTrace()));
-            if (ex.getMessage().equals(this.jwtProvider.jwtTokenExpiredExceptionMessage))
+            if (ex.getMessage() != null && ex.getMessage().equals(this.jwtProvider.jwtTokenExpiredExceptionMessage))
                 return Response.status(Status.UNAUTHORIZED).entity(this.jwtProvider.jwtTokenExpiredExceptionMessage).header("Access-Control-Allow-Origin", "*").build();
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
         }
@@ -140,7 +117,7 @@ public class MobileResource {
         } catch (Exception ex) {
             logger.log(Level.WARNING, ex.toString());
             logger.log(Level.WARNING, Arrays.toString(ex.getStackTrace()));
-            if (ex.getMessage().equals(this.jwtProvider.jwtTokenExpiredExceptionMessage))
+            if (ex.getMessage() != null && ex.getMessage().equals(this.jwtProvider.jwtTokenExpiredExceptionMessage))
                 return Response.status(Status.UNAUTHORIZED).entity(this.jwtProvider.jwtTokenExpiredExceptionMessage).header("Access-Control-Allow-Origin", "*").build();
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
         }
@@ -226,8 +203,7 @@ public class MobileResource {
     private Boolean checkUserHasDevice(String userId, String deviceId) throws Exception {
         try {
             User user = this.getUserFromUserDataWebService(userId);
-            List<Device> devices = this.userDataProvider.findUserDevices(user);
-            return devices.stream().anyMatch((device) -> (device.getDeviceId().equals(deviceId)));
+            return user.getDevices().stream().anyMatch((device) -> (device.getDeviceId().equals(deviceId)));
         } catch (Exception ex) {
             throw ex;
         }

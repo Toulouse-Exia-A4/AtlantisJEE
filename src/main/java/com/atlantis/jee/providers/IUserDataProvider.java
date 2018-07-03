@@ -17,6 +17,4 @@ import javax.ejb.Local;
 public interface IUserDataProvider {
     public User findUser(String userId) throws Exception;
     public User createUser(User user) throws Exception;
-    
-    public ArrayList<Device> findUserDevices(User user) throws Exception;
 }
