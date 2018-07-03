@@ -83,10 +83,7 @@ public class UserDataProvider implements IUserDataProvider {
                 return null;
             String resp_body = EntityUtils.toString(entity);
             JsonParser parser = new JsonParser();
-            logger.log(Level.INFO,entity.toString());
-            logger.log(Level.INFO,parser.parse(resp_body).toString());
             if (parser.parse(resp_body) instanceof JsonNull) {
-                logger.log(Level.INFO, "JsonNull answered from UserDataAPI");
                 return null;
             }
             JsonObject jsobj = (JsonObject) parser.parse(resp_body);
@@ -119,6 +116,8 @@ public class UserDataProvider implements IUserDataProvider {
                 return null;
             String resp_body = EntityUtils.toString(entity);
             JsonParser parser = new JsonParser();
+            logger.log(Level.INFO, "Body de la réponse: "+ resp_body);
+            logger.log(Level.INFO, "Body de la réponse parsé: "+  parser.parse(resp_body));
             JsonObject jsobj = (JsonObject) parser.parse(resp_body);
             user = new User();
             user.setId(jsobj.get("id").toString());
