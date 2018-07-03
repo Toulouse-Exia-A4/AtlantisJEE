@@ -71,10 +71,10 @@ public class MobileResourceTest {
         jwtProviderMock = Mockito.mock(JWTProvider.class);
         
         userMock = new User("userId", "Simon", "Todeschini");
-        deviceMock = new Device("deviceId-1", "temp", "°C");
+        deviceMock = new Device("deviceId-1", "devicename1", "temp", "°C");
         devicesMock = new ArrayList();
         devicesMock.add(deviceMock);
-        devicesMock.add(new Device("deviceId-2", "temp", "°C"));
+        devicesMock.add(new Device("deviceId-2", "devicename2", "temp", "°C"));
         RawMetric rawMetric1 = new RawMetric();
         rawMetric1.setDeviceId("deviceId-1");
         rawMetric1.setValue("20");
