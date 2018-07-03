@@ -39,7 +39,7 @@ public class JMSProvider {
         URL = configFile.getProperty("JMS_URL", "t3://localhost:7001");
         JNDI_FACTORY = configFile.getProperty("JMS_JNDI_FACTORY", "weblogic.jndi.WLInitialContextFactory");
         JMS_FACTORY = configFile.getProperty("FACTORY", "jms/ConnectionFactory");
-        QUEUE = configFile.getProperty("JMS_QUEUE", "jms/JMSQueue");
+        QUEUE = configFile.getProperty("JMS_QUEUE", "jms/DeviceMessagingQueue");
     }
     
     public void sendMessage(String message) throws Exception, NamingException, JMSException {
