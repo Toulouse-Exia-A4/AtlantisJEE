@@ -108,9 +108,11 @@ public class UserDataProvider implements IUserDataProvider {
         HttpPost post = new HttpPost(postUrl);
         try {
             StringEntity postingString = new StringEntity(gson.toJson(user));
-            logger.log(Level.WARNING, "Requéte envoyée: "+ postingString.toString());
+            logger.log(Level.WARNING, "Requéte envoyée: "+ gson.toJson(user).toString());
+            logger.log(Level.WARNING, "posting string: "+ postingString.toString());
             post.setEntity(postingString);
             post.setHeader("Content-type", "application/json");
+            logger.log(Level.WARNING, "Httppost: "+ post.toString());
             HttpResponse  response = httpClient.execute(post);
             HttpEntity entity = response.getEntity();
             if (entity == null)
