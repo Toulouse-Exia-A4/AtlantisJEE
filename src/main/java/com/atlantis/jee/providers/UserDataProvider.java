@@ -22,8 +22,11 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonNull;
 import org.apache.http.HttpEntity;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.core.Response;
 
 /**
@@ -35,6 +38,8 @@ public class UserDataProvider implements IUserDataProvider {
     private static String BASEURL;
     
     private HttpClient _httpClient;
+    
+    private Logger logger;
     
     public UserDataProvider() {
         loadConf();
@@ -55,6 +60,7 @@ public class UserDataProvider implements IUserDataProvider {
 	}
         BASEURL = configFile.getProperty("DOTNETBASEURL", "https://192.168.1.87") + 
                 configFile.getProperty("USERDATAENDPOINT", ":30010/userdata");
+        this.logger = Logger.getLogger(UserDataProvider.class.getName());
     }
     
     private HttpClient getHttpClient() {
@@ -77,6 +83,12 @@ public class UserDataProvider implements IUserDataProvider {
                 return null;
             String resp_body = EntityUtils.toString(entity);
             JsonParser parser = new JsonParser();
+            logger.log(Level.INFO,entity.toString());
+            logger.log(Level.INFO,parser.parse(resp_body).toString());
+            if (parser.parse(resp_body) instanceof JsonNull) {
+                logger.log(Level.INFO, "JsonNull answered from UserDataAPI");
+                return null;
+            }
             JsonObject jsobj = (JsonObject) parser.parse(resp_body);
             User user = new User();
             user.setId(jsobj.get("id").toString());
