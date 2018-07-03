@@ -37,6 +37,8 @@ import com.google.gson.JsonParser;
 import javax.ws.rs.Consumes;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -58,12 +60,15 @@ public class MobileResource {
     
     private final String userDoesNotExistExceptionMessage = "User does not exist";
     
+    private final Logger logger;
+    
     public MobileResource() {
         userDataProvider = new UserDataProvider();
         rawMetricProvider = new RawMetricProvider();
         calculatedMetricDAO = new CalculatedMetricDAO();
         jwtProvider = new JWTProvider();
         jmsProvider = new JMSProvider();
+        logger = Logger.getLogger(MobileResource.class.getName());
     }
     
     public MobileResource(IUserDataProvider userDataProvider, IRawMetricProvider rawMetricProvider, ICalculatedMetricDAO calculatedMetricDAO, JWTProvider jwtProvider) {
@@ -72,6 +77,7 @@ public class MobileResource {
         this.calculatedMetricDAO = calculatedMetricDAO;
         this.jwtProvider = jwtProvider;
         this.jmsProvider = new JMSProvider();
+        logger = Logger.getLogger(MobileResource.class.getName());
     }
 
     @Path("getUserDevices")
@@ -86,7 +92,7 @@ public class MobileResource {
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
         } catch (Exception ex) {
-            System.out.println(ex);
+            logger.log(Level.WARNING, ex.toString());
             if (ex.getMessage().equals(this.userDoesNotExistExceptionMessage))
                 return Response.status(Status.NOT_FOUND).entity(this.userDoesNotExistExceptionMessage).header("Access-Control-Allow-Origin", "*").build();
             if (ex.getMessage().equals(this.jwtProvider.jwtTokenExpiredExceptionMessage))
@@ -108,7 +114,7 @@ public class MobileResource {
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
         } catch (Exception ex) {
-            System.out.println(ex);
+            logger.log(Level.WARNING, ex.toString());
             if (ex.getMessage().equals(this.jwtProvider.jwtTokenExpiredExceptionMessage))
                 return Response.status(Status.UNAUTHORIZED).entity(this.jwtProvider.jwtTokenExpiredExceptionMessage).header("Access-Control-Allow-Origin", "*").build();
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
@@ -128,7 +134,7 @@ public class MobileResource {
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
         } catch (Exception ex) {
-            System.out.println(ex);
+            logger.log(Level.WARNING, ex.toString());
             if (ex.getMessage().equals(this.jwtProvider.jwtTokenExpiredExceptionMessage))
                 return Response.status(Status.UNAUTHORIZED).entity(this.jwtProvider.jwtTokenExpiredExceptionMessage).header("Access-Control-Allow-Origin", "*").build();
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
@@ -156,7 +162,7 @@ public class MobileResource {
             responseBody.put("message", "Your message will be send to and treated by your device shortly");
             return Response.status(Status.OK).entity(responseBody).header("Access-Control-Allow-Origin", "*").build();
         } catch (Exception ex) {
-            System.out.println(ex);
+            logger.log(Level.WARNING, ex.toString());
             if (ex.getMessage() != null && ex.getMessage().equals(this.jwtProvider.jwtTokenExpiredExceptionMessage))
                 return Response.status(Status.UNAUTHORIZED).entity(this.jwtProvider.jwtTokenExpiredExceptionMessage).header("Access-Control-Allow-Origin", "*").build();
             System.out.println(ex);
@@ -173,7 +179,7 @@ public class MobileResource {
             User user = this.getUserFromUserDataWebService(userId);
             return Response.status(Status.OK).entity(user).header("Access-Control-Allow-Origin", "*").build();
         } catch (Exception ex) {
-            System.out.println(ex);
+            logger.log(Level.WARNING, ex.toString());
             if (ex.getMessage().equals(this.userDoesNotExistExceptionMessage))
                 return Response.status(Status.NOT_FOUND).entity(this.userDoesNotExistExceptionMessage).header("Access-Control-Allow-Origin", "*").build();
             if (ex.getMessage() != null && ex.getMessage().equals(this.jwtProvider.jwtTokenExpiredExceptionMessage))
@@ -201,7 +207,7 @@ public class MobileResource {
             user = this.userDataProvider.createUser(user);
             return Response.status(Status.OK).entity(user).header("Access-Control-Allow-Origin", "*").build();
         } catch (Exception ex) {
-            System.out.println(ex);
+            logger.log(Level.WARNING, ex.toString());
             if (ex.getMessage() != null && ex.getMessage().equals(this.jwtProvider.jwtTokenExpiredExceptionMessage))
                 return Response.status(Status.UNAUTHORIZED).entity(this.jwtProvider.jwtTokenExpiredExceptionMessage).header("Access-Control-Allow-Origin", "*").build();         
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
