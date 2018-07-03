@@ -154,8 +154,8 @@ public class MobileResource {
             JsonParser parser = new JsonParser();
             JsonObject jsobj = (JsonObject) parser.parse(content);
             String token = jsobj.get("token").toString();
-            String deviceId = jsobj.get("deviceId").toString();
-            String command = jsobj.get("command").toString();
+            String deviceId = jsobj.get("deviceId").toString().replace("\"", "");
+            String command = jsobj.get("command").toString().replace("\"", "");
             String userId = this.jwtProvider.getUserIdFromToken(token);
             if (!this.checkUserHasDevice(userId, deviceId))
                 return Response.status(Status.FORBIDDEN).entity("User has no right on device " + deviceId).build();
@@ -189,7 +189,7 @@ public class MobileResource {
             { 
                 logger.log(Level.WARNING, e.toString()); 
             } 
-            if (ex.getMessage().equals(this.userDoesNotExistExceptionMessage))
+            if (ex.getMessage() != null && ex.getMessage().equals(this.userDoesNotExistExceptionMessage))
                 return Response.status(Status.NOT_FOUND).entity(this.userDoesNotExistExceptionMessage).header("Access-Control-Allow-Origin", "*").build();
             if (ex.getMessage() != null && ex.getMessage().equals(this.jwtProvider.jwtTokenExpiredExceptionMessage))
                 return Response.status(Status.UNAUTHORIZED).entity(this.jwtProvider.jwtTokenExpiredExceptionMessage).header("Access-Control-Allow-Origin", "*").build();
@@ -206,8 +206,8 @@ public class MobileResource {
             JsonParser parser = new JsonParser();
             JsonObject jsobj = (JsonObject) parser.parse(content);
             String token = jsobj.get("token").toString();
-            String firstname = jsobj.get("firstname").toString();
-            String lastname = jsobj.get("lastname").toString();
+            String firstname = jsobj.get("firstname").toString().replace("\"", "");
+            String lastname = jsobj.get("lastname").toString().replace("\"", "");
             String userId = this.jwtProvider.getUserIdFromToken(token);
             User user = new User();
             user.setUserId(userId);
