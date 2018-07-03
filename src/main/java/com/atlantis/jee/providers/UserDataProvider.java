@@ -88,7 +88,7 @@ public class UserDataProvider implements IUserDataProvider {
             }
             JsonObject jsobj = (JsonObject) parser.parse(resp_body);
             User user = new User();
-            logger.log(Level.WARNING, jsobj.toString());
+            //logger.log(Level.WARNING, jsobj.toString());
             user.setUserId(jsobj.get("userId").toString());
             user.setFirstname(jsobj.get("firstname").toString());
             user.setLastname(jsobj.get("lastname").toString());
@@ -108,19 +108,19 @@ public class UserDataProvider implements IUserDataProvider {
         HttpPost post = new HttpPost(postUrl);
         try {
             StringEntity postingString = new StringEntity(gson.toJson(user));
-            logger.log(Level.WARNING, "Requéte envoyée: "+ gson.toJson(user).toString());
-            logger.log(Level.WARNING, "posting string: "+ postingString.toString());
+            //logger.log(Level.WARNING, "Requéte envoyée: "+ gson.toJson(user).toString());
+            //logger.log(Level.WARNING, "posting string: "+ postingString.toString());
             post.setEntity(postingString);
             post.setHeader("Content-type", "application/json");
-            logger.log(Level.WARNING, "Httppost: "+ post.toString());
+            //logger.log(Level.WARNING, "Httppost: "+ post.toString());
             HttpResponse  response = httpClient.execute(post);
             HttpEntity entity = response.getEntity();
             if (entity == null)
                 return null;
             String resp_body = EntityUtils.toString(entity);
             JsonParser parser = new JsonParser();
-            logger.log(Level.WARNING, "Body de la réponse: "+ resp_body);
-            logger.log(Level.WARNING, "Body de la réponse parsé: "+  parser.parse(resp_body));
+            //logger.log(Level.WARNING, "Body de la réponse: "+ resp_body);
+            //logger.log(Level.WARNING, "Body de la réponse parsé: "+  parser.parse(resp_body));
             JsonObject jsobj = (JsonObject) parser.parse(resp_body);
             jsobj = jsobj.getAsJsonObject("AddUserResult");
             user = new User();
@@ -150,6 +150,7 @@ public class UserDataProvider implements IUserDataProvider {
             String resp_body = EntityUtils.toString(entity);
             JsonParser parser = new JsonParser();
             JsonArray jsarr = (JsonArray) parser.parse(resp_body);
+            logger.log(Level.WARNING, jsarr.toString());
             for (int i = 0; i < jsarr.size(); i++) {
                 Device device = new Device();
                 JsonObject jsobj = (JsonObject) parser.parse(jsarr.get(i).toString());
