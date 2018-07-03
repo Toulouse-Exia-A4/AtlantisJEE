@@ -13,6 +13,7 @@ import com.atlantis.jee.model.RawMetric;
 import com.atlantis.jee.model.User;
 import com.atlantis.jee.providers.IRawMetricProvider;
 import com.atlantis.jee.providers.IUserDataProvider;
+import com.atlantis.jee.providers.JMSProvider;
 import com.atlantis.jee.providers.JWTProvider;
 import com.atlantis.jee.providers.RawMetricProvider;
 import javax.ws.rs.core.Context;
@@ -53,6 +54,7 @@ public class MobileResource {
     private final IRawMetricProvider rawMetricProvider;
     private final ICalculatedMetricDAO calculatedMetricDAO;
     private final JWTProvider jwtProvider;
+    private final JMSProvider jmsProvider;
     
     private final String userDoesNotExistExceptionMessage = "User does not exist";
     
@@ -61,6 +63,7 @@ public class MobileResource {
         rawMetricProvider = new RawMetricProvider();
         calculatedMetricDAO = new CalculatedMetricDAO();
         jwtProvider = new JWTProvider();
+        jmsProvider = new JMSProvider();
     }
     
     public MobileResource(IUserDataProvider userDataProvider, IRawMetricProvider rawMetricProvider, ICalculatedMetricDAO calculatedMetricDAO, JWTProvider jwtProvider) {
@@ -68,6 +71,7 @@ public class MobileResource {
         this.rawMetricProvider = rawMetricProvider;
         this.calculatedMetricDAO = calculatedMetricDAO;
         this.jwtProvider = jwtProvider;
+        this.jmsProvider = new JMSProvider();
     }
 
     @Path("getUserDevices")
@@ -140,10 +144,10 @@ public class MobileResource {
             String deviceId = jsobj.get("deviceId").toString();
             String command = jsobj.get("command").toString();
             String userId = this.jwtProvider.getUserIdFromToken(token);
-            if (!this.checkUserHasDevice(userId, deviceId))
-                return Response.status(Status.FORBIDDEN).entity("User has no right on device " + deviceId).build();
+            //if (!this.checkUserHasDevice(userId, deviceId))
+            //    return Response.status(Status.FORBIDDEN).entity("User has no right on device " + deviceId).build();
             
-            //logic
+            this.jmsProvider.sendMessage(content);
             
             Map responseBody = new HashMap();
             responseBody.put("message", "Your message will be send to and treated by your device shortly");
@@ -151,6 +155,7 @@ public class MobileResource {
         } catch (Exception ex) {
             if (ex.getMessage() != null && ex.getMessage().equals(this.jwtProvider.jwtTokenExpiredExceptionMessage))
                 return Response.status(Status.UNAUTHORIZED).entity(this.jwtProvider.jwtTokenExpiredExceptionMessage).header("Access-Control-Allow-Origin", "*").build();
+            System.out.println(ex);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
         }
     }
