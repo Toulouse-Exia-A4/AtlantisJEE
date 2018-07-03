@@ -7,6 +7,7 @@ package com.atlantis.jee.providers;
 
 import com.atlantis.jee.model.RawMetric;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -79,11 +80,13 @@ public class RawMetricProvider implements IRawMetricProvider {
                 return null;
             String resp_body = EntityUtils.toString(entity);
             JsonParser parser = new JsonParser();
+            if (parser.parse(resp_body) instanceof JsonNull) {
+                return null;
+            }
             JsonArray jsarr = (JsonArray) parser.parse(resp_body);
             for (int i = 0; i < jsarr.size(); i++) {
                 RawMetric rawMetric = new RawMetric();
                 JsonObject jsobj = (JsonObject) parser.parse(jsarr.get(i).toString());
-                rawMetric.setId(jsobj.get("id").toString());
                 rawMetric.setDeviceId(jsobj.get("deviceId").toString());
                 rawMetric.setDate(jsobj.get("date").getAsLong());
                 rawMetric.setValue(jsobj.get("value").toString());
