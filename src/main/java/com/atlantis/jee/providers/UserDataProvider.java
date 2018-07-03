@@ -122,8 +122,8 @@ public class UserDataProvider implements IUserDataProvider {
             logger.log(Level.WARNING, "Body de la réponse: "+ resp_body);
             logger.log(Level.WARNING, "Body de la réponse parsé: "+  parser.parse(resp_body));
             JsonObject jsobj = (JsonObject) parser.parse(resp_body);
+            jsobj = jsobj.getAsJsonObject("AddUserResult");
             user = new User();
-            user.setId(jsobj.get("id").toString());
             user.setUserId(jsobj.get("userId").toString());
             user.setFirstname(jsobj.get("firstname").toString());
             user.setLastname(jsobj.get("lastname").toString());
