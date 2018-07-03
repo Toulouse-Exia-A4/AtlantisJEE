@@ -20,22 +20,7 @@ before_deploy:
 deploy:
   - provider: script
     skip_cleanup: true
-    script: sudo sshpass -p '$SSH_PASS' ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_ENDPOINT -p $SSH_PORT touch hey
-    on:
-      branch: master
-  - provider: script
-    skip_cleanup: true
-    script: sudo sshpass -p '$SSH_PASS' ssh $SSH_USER@$SSH_ENDPOINT -p $SSH_PORT "$DEPLOY_PATH/bin/asadmin undeploy AtlantisJEE"
-    on:
-      branch: master
-  - provider: script
-    skip_cleanup: true
     script: sudo sshpass -p '$SSH_PASS' scp -P $SSH_PORT target/AtlantisJEE.war $SSH_USER@$SSH_ENDPOINT:$DEPLOY_PATH
-    on:
-      branch: master
-  - provider: script
-    skip_cleanup: true
-    script: sudo sshpass -p '$SSH_PASS' ssh $SSH_USER@$SSH_ENDPOINT -p $SSH_PORT "$DEPLOY_PATH/bin/asadmin deploy $DEPLOY_PATH/AtlantisJEE.war"
     on:
       branch: master
 
