@@ -185,7 +185,10 @@ public class MobileResource {
             return Response.status(Status.OK).entity(user).header("Access-Control-Allow-Origin", "*").build();
         } catch (Exception ex) {
             logger.log(Level.WARNING, ex.toString());
-            logger.log(Level.WARNING, Arrays.toString(ex.getStackTrace()));
+            for(StackTraceElement e : ex.getStackTrace())
+            {
+                logger.log(Level.WARNING, e.toString());
+            }
             if (ex.getMessage().equals(this.userDoesNotExistExceptionMessage))
                 return Response.status(Status.NOT_FOUND).entity(this.userDoesNotExistExceptionMessage).header("Access-Control-Allow-Origin", "*").build();
             if (ex.getMessage() != null && ex.getMessage().equals(this.jwtProvider.jwtTokenExpiredExceptionMessage))
