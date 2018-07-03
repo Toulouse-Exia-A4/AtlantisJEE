@@ -89,7 +89,7 @@ public class MobileResource {
             String userId = this.jwtProvider.getUserIdFromToken(token);
             if (!this.checkUserHasDevice(userId, deviceId))
                 return Response.status(Status.FORBIDDEN).entity("User has no right on device " + deviceId).build();
-            List<RawMetric> rawMetrics = this.rawMetricProvider.getRawMetricFromDevice(deviceId, timestamp, 20);
+            List<RawMetric> rawMetrics = this.rawMetricProvider.getRawMetricFromDevice(deviceId, timestamp, 10);
             return Response.status(Status.OK).entity(rawMetrics)
                     .header("Access-Control-Allow-Origin", "*")
                     .build();

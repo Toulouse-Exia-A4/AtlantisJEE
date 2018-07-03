@@ -13,21 +13,12 @@ import java.util.Date;
  */
 
 public class RawMetric {
-    String _id;
     String DeviceId;
     Long date;
     String value;
     
     public RawMetric() {
         
-    }
-
-    public String getId() {
-        return _id;
-    }
-
-    public void setId(String _id) {
-        this._id = _id;
     }
 
     public String getDeviceId() {
