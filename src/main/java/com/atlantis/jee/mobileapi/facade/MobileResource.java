@@ -138,7 +138,7 @@ public class MobileResource {
             if (!this.checkUserHasDevice(userId, deviceId))
                 return Response.status(Status.FORBIDDEN).entity("User has no right on device " + deviceId).build();
             
-            this.jmsProvider.sendMessage(content);
+            this.jmsProvider.sendMessage(command, deviceId);
             
             Map responseBody = new HashMap();
             responseBody.put("message", "Your message will be send to and treated by your device shortly");

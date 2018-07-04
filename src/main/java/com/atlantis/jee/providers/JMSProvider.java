@@ -5,7 +5,10 @@
  */
 package com.atlantis.jee.providers;
 
+import com.google.gson.Gson;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Properties;
 import javax.jms.*;
 import javax.naming.Context;
@@ -42,7 +45,7 @@ public class JMSProvider {
         QUEUE = configFile.getProperty("JMS_QUEUE", "jms/DeviceMessagingQueue");
     }
     
-    public void sendMessage(String message) throws Exception, NamingException, JMSException {
+    public void sendMessage(String message, String deviceId) throws Exception, NamingException, JMSException {
         Hashtable env = new Hashtable();
         env.put(Context.INITIAL_CONTEXT_FACTORY, JNDI_FACTORY);
         env.put(Context.PROVIDER_URL, URL);
@@ -56,7 +59,12 @@ public class JMSProvider {
         TextMessage msg = qsession.createTextMessage();
         qcon.start();
         
-        msg.setText(message);
+        Gson gson = new Gson();
+        Map<String, String> map = new HashMap();
+        map.put("deviceId", deviceId);
+        map.put("message", message);
+        
+        msg.setText(gson.toJson(map));
         qsender.send(msg);
         
         qsender.close();
